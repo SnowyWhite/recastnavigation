@@ -1,13 +1,18 @@
 : 1
 name: librecastnavigation
-version: 0.1.0-a.0.z
+version: 1.7.0-a.0.z
 language: c++
-summary: recastnavigation C++ library
-license: other: proprietary ; Not free/open source.
+project: recastnavigation
+summary: Navigation mesh construction and pathfinding C++ library
+license: Zlib
+topics: navigation mesh, pathfinding, game development
+description-file: README.md
 package-description-file: PACKAGE-README.md
-url: https://example.org/upstream
-email: upstream@example.org
-package-url: https://github.com/build2-packaging/librecastnavigation
-package-email: packaging@build2.org ; Mailing list.
+changes-file: CHANGELOG.md
+url: https://recastnav.com
+doc-url: https://recastnav.com
+src-url: https://github.com/recastnavigation/recastnavigation
+package-url: https://github.com/SnowyWhite/recastnavigation
+package-email: 45012141+SnowyWhite@users.noreply.github.com
 depends: * build2 >= 0.18.0
 depends: * bpkg >= 0.18.0

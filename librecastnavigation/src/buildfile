@@ -1,6 +1,9 @@
-intf_libs = # Interface dependencies.
-impl_libs = # Implementation dependencies.
-#import xxxx_libs += libhello%lib{hello}
+# Recast (navigation mesh construction), Detour (the runtime: navigation
+# mesh, queries, pathfinding), DetourCrowd (agent steering), DetourTileCache
+# (tile caching with obstacles) and DebugUtils (debug drawing and dumps),
+# built as one library, which is how upstream's pkg-config file presents
+# them (-lRecast -lDetour -lDetourCrowd -lDetourTileCache -lDebugUtils).
+#
 
 # Public headers.
 #
@@ -12,22 +15,26 @@ pub_hdrs = $($pub/ pub_hdrs)
 
 lib{recastnavigation}: libul{recastnavigation}: $pub/{$pub_hdrs}
 
-# Private headers and sources as well as dependencies.
+# Sources: the Source/ directory of each upstream component, symlinked.
 #
-libul{recastnavigation}: {hxx cxx}{**} $impl_libs $intf_libs
+libul{recastnavigation}: cxx{**}
 
 libs{recastnavigation}: def{recastnavigation}: include = ($cxx.target.system == 'win32-msvc')
 def{recastnavigation}: libul{recastnavigation}
 
 # Build options.
 #
-out_pfx_inc = [dir_path] $out_root/include/
+# Upstream includes its public headers without a directory prefix
+# ("Recast.h", <DetourNavMesh.h>), as its users do, and installs them into
+# include/recastnavigation/ with both that directory and include/ on the
+# search path (recastnavigation.pc). The same here: the headers are in
+# include/recastnavigation/, and both ways of including them work, for the
+# library's own sources and for its consumers.
+#
 src_pfx_inc = [dir_path] $src_root/include/
-out_pfx_src = [dir_path] $out_root/src/
-src_pfx_src = [dir_path] $src_root/src/
+src_pfx_inc_unq = [dir_path] $src_root/include/recastnavigation/
 
-cxx.poptions =+ "-I$out_pfx_src" "-I$src_pfx_src" \
-                "-I$out_pfx_inc" "-I$src_pfx_inc"
+cxx.poptions =+ "-I$src_pfx_inc" "-I$src_pfx_inc_unq"
 
 if ($cxx.target.system == 'mingw32')
   cxx.loptions += -Wl,--export-all-symbols
@@ -36,9 +43,13 @@ if ($cxx.target.system == 'mingw32')
 #
 lib{recastnavigation}:
 {
-  cxx.export.poptions = "-I$out_pfx_inc" "-I$src_pfx_inc"
-  cxx.export.libs = $intf_libs
+  cxx.export.poptions = "-I$src_pfx_inc" "-I$src_pfx_inc_unq"
 }
+
+# Make sure headers installed into, say, /usr/include/recastnavigation/ can
+# also be included without the directory prefix, as upstream arranges.
+#
+lib{recastnavigation}: cxx.pkgconfig.include = include/ include/recastnavigation/
 
 # For pre-releases use the complete version to make sure they cannot
 # be used in place of another pre-release or the final version. See
@@ -48,7 +59,3 @@ if $version.pre_release
   lib{recastnavigation}: bin.lib.version = "-$version.project_id"
 else
   lib{recastnavigation}: bin.lib.version = "-$version.major.$version.minor"
-
-# Don't install private headers.
-#
-hxx{*}: install = false
