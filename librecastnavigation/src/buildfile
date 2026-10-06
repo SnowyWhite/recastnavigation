@@ -1,0 +1,54 @@
+intf_libs = # Interface dependencies.
+impl_libs = # Implementation dependencies.
+#import xxxx_libs += libhello%lib{hello}
+
+# Public headers.
+#
+pub = [dir_path] ../include/recastnavigation/
+
+include $pub
+
+pub_hdrs = $($pub/ pub_hdrs)
+
+lib{recastnavigation}: libul{recastnavigation}: $pub/{$pub_hdrs}
+
+# Private headers and sources as well as dependencies.
+#
+libul{recastnavigation}: {hxx cxx}{**} $impl_libs $intf_libs
+
+libs{recastnavigation}: def{recastnavigation}: include = ($cxx.target.system == 'win32-msvc')
+def{recastnavigation}: libul{recastnavigation}
+
+# Build options.
+#
+out_pfx_inc = [dir_path] $out_root/include/
+src_pfx_inc = [dir_path] $src_root/include/
+out_pfx_src = [dir_path] $out_root/src/
+src_pfx_src = [dir_path] $src_root/src/
+
+cxx.poptions =+ "-I$out_pfx_src" "-I$src_pfx_src" \
+                "-I$out_pfx_inc" "-I$src_pfx_inc"
+
+if ($cxx.target.system == 'mingw32')
+  cxx.loptions += -Wl,--export-all-symbols
+
+# Export options.
+#
+lib{recastnavigation}:
+{
+  cxx.export.poptions = "-I$out_pfx_inc" "-I$src_pfx_inc"
+  cxx.export.libs = $intf_libs
+}
+
+# For pre-releases use the complete version to make sure they cannot
+# be used in place of another pre-release or the final version. See
+# the version module for details on the version.* variable values.
+#
+if $version.pre_release
+  lib{recastnavigation}: bin.lib.version = "-$version.project_id"
+else
+  lib{recastnavigation}: bin.lib.version = "-$version.major.$version.minor"
+
+# Don't install private headers.
+#
+hxx{*}: install = false

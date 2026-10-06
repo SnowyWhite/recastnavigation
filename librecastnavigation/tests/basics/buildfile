@@ -1,0 +1,3 @@
+import libs = librecastnavigation%lib{recastnavigation}
+
+exe{driver}: {hxx cxx}{**} $libs testscript{**}

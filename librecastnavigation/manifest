@@ -1,0 +1,13 @@
+: 1
+name: librecastnavigation
+version: 0.1.0-a.0.z
+language: c++
+summary: recastnavigation C++ library
+license: other: proprietary ; Not free/open source.
+package-description-file: PACKAGE-README.md
+url: https://example.org/upstream
+email: upstream@example.org
+package-url: https://github.com/build2-packaging/librecastnavigation
+package-email: packaging@build2.org ; Mailing list.
+depends: * build2 >= 0.18.0
+depends: * bpkg >= 0.18.0

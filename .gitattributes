@@ -17,3 +17,13 @@
 # Use `binary` to make sure certain files are never auto-detected as text.
 #
 #*.png binary
+
+# The source directories are symlinks to the upstream submodule's. git does
+# not record a symlink's type, and on Windows a directory symlink must be
+# created as one.
+#
+librecastnavigation/src/Recast          symlink=dir
+librecastnavigation/src/Detour          symlink=dir
+librecastnavigation/src/DetourCrowd     symlink=dir
+librecastnavigation/src/DetourTileCache symlink=dir
+librecastnavigation/src/DebugUtils      symlink=dir

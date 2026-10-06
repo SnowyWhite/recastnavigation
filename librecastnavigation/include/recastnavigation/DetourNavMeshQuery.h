@@ -1,0 +1,1 @@
+../../../upstream/Detour/Include/DetourNavMeshQuery.h

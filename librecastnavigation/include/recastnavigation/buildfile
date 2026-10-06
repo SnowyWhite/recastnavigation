@@ -1,0 +1,12 @@
+pub_hdrs = hxx{**}
+
+./: $pub_hdrs
+
+# Install into the recastnavigation/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+hxx{*}:
+{
+  install         = include/recastnavigation/
+  install.subdirs = true
+}
