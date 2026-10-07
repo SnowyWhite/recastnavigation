@@ -36,6 +36,17 @@ src_pfx_inc_unq = [dir_path] $src_root/include/recastnavigation/
 
 cxx.poptions =+ "-I$src_pfx_inc" "-I$src_pfx_inc_unq"
 
+# The virtual query filter changes dtQueryFilter's layout (a vtable), so the
+# define is exported along with the include directories: the library and
+# everything compiled against its headers have to agree on it.
+#
+defs =
+
+if $config.librecastnavigation.virtual_query_filter
+  defs += -DDT_VIRTUAL_QUERYFILTER=1
+
+cxx.poptions += $defs
+
 if ($cxx.target.system == 'mingw32')
   cxx.loptions += -Wl,--export-all-symbols
 
@@ -43,7 +54,7 @@ if ($cxx.target.system == 'mingw32')
 #
 lib{recastnavigation}:
 {
-  cxx.export.poptions = "-I$src_pfx_inc" "-I$src_pfx_inc_unq"
+  cxx.export.poptions = "-I$src_pfx_inc" "-I$src_pfx_inc_unq" $defs
 }
 
 # Make sure headers installed into, say, /usr/include/recastnavigation/ can

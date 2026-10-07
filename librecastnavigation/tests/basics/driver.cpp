@@ -15,6 +15,24 @@
 #undef NDEBUG
 #include <cassert>
 
+#ifdef DT_VIRTUAL_QUERYFILTER
+// With config.librecastnavigation.virtual_query_filter the define comes
+// with the library: a filter derived from dtQueryFilter is what the query
+// asks, here one that refuses every polygon.
+//
+struct refuse_all: dtQueryFilter
+{
+  mutable int asked = 0;
+
+  bool
+  passFilter (const dtPolyRef, const dtMeshTile*, const dtPoly*) const override
+  {
+    ++asked;
+    return false;
+  }
+};
+#endif
+
 int main ()
 {
   // One triangle for a floor, voxelized, filtered and turned into the
@@ -99,6 +117,15 @@ int main ()
   float nearest[3];
   assert (dtStatusSucceed (q->findNearestPoly (center, extents, &filter, &ref, nearest)));
   assert (ref != 0);
+
+#ifdef DT_VIRTUAL_QUERYFILTER
+  {
+    refuse_all f;
+    dtPolyRef r (0);
+    assert (dtStatusSucceed (q->findNearestPoly (center, extents, &f, &r, nearest)));
+    assert (r == 0 && f.asked > 0);
+  }
+#endif
 
   // The crowd and the tile cache, so that their code links as well.
   //

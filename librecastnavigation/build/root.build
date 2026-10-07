@@ -5,6 +5,12 @@ using cxx
 hxx{*}: extension = h
 cxx{*}: extension = cpp
 
+# Build Detour's dtQueryFilter with virtual passFilter() and getCost(), so
+# that a user can derive its own filter (upstream's DT_VIRTUAL_QUERYFILTER,
+# which DetourNavMeshQuery.h leaves to the build).
+#
+config [bool] config.librecastnavigation.virtual_query_filter ?= false
+
 # The test target for cross-testing (running tests under Wine, etc).
 #
 test.target = $cxx.target

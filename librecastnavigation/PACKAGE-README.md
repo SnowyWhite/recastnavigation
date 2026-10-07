@@ -20,6 +20,7 @@ To start using `librecastnavigation` in your project, add the following
 `depends` value to your `manifest`, adjusting the version constraint as
 appropriate:
 
+```
 depends: librecastnavigation ^1.7.0-a.0.1
 ```
 
@@ -43,3 +44,32 @@ without it:
 
 Upstream's CMake build generates a `recastnavigation/version.h`; this
 package does not provide it.
+
+
+## Configuration
+
+The package has the following configuration variables:
+
+```
+[bool] config.librecastnavigation.virtual_query_filter ?= false
+```
+
+Build Detour with `DT_VIRTUAL_QUERYFILTER` defined, so that
+`dtQueryFilter::passFilter()` and `dtQueryFilter::getCost()` are virtual and
+a project can derive its own filter (upstream leaves the define to the
+build). The define changes the class's layout and is exported to the
+library's users, so everything compiled against the headers agrees with the
+library. A project that derives a filter requires it in its `manifest`:
+
+```
+depends:
+\
+librecastnavigation ^1.7.0-a.0.1
+{
+  require
+  {
+    config.librecastnavigation.virtual_query_filter = true
+  }
+}
+\
+```
